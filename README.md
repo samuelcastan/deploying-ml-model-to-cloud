@@ -6,23 +6,6 @@ Working in a command line environment is recommended for ease of use with git an
    * As you work on the code, continually commit changes. Trained models you want to keep must be committed to DVC.
 * Connect your local Git repository to GitHub.
 
-## Set up S3
-
-* In your CLI environment install the<a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html" target="_blank"> AWS CLI tool</a>.
-* In the navigation bar in the Udacity classroom select **Open AWS Gateway** and then click **Open AWS Console**. You will not need the AWS Access Key ID or Secret Access Key provided here.
-* From the Services drop down select S3 and then click Create bucket.
-* Give your bucket a name, the rest of the options can remain at their default.
-
-To use your new S3 bucket from the AWS CLI you will need to create an IAM user with the appropriate permissions. The full instructions can be found <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console" target="_blank">here</a>, what follows is a paraphrasing:
-
-* Sign in to the IAM console <a href="https://console.aws.amazon.com/iam/" target="_blank">here</a> or from the Services drop down on the upper navigation bar.
-* In the left navigation bar select **Users**, then choose **Add user**.
-* Give the user a name and select **Programmatic access**.
-* In the permissions selector, search for S3 and give it **AmazonS3FullAccess**
-* Tags are optional and can be skipped.
-* After reviewing your choices, click create user. 
-* Configure your AWS CLI to use the Access key ID and Secret Access key.
-
 ## GitHub Actions
 
 * Setup GitHub Actions on your repository. You can use one of the pre-made GitHub Actions if at a minimum it runs pytest and flake8 on push and requires both to pass without error.

@@ -1,4 +1,9 @@
-# Script to train machine learning model.
+''''
+Script to train machine learning model.
+
+Author: Samuel Castan
+Date; Oct 2023
+'''
 
 from sklearn.model_selection import train_test_split
 
@@ -19,6 +24,7 @@ cat_features = [
     "sex",
     "native-country",
 ]
+
 X_train, y_train, encoder, lb = process_data(
     train, categorical_features=cat_features, label="salary", training=True
 )

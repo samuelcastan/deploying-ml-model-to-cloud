@@ -1,5 +1,6 @@
 ''''
-Script that removes whitespaces on the column names
+Script that removes whitespaces on the column names and values in 
+categorical columns plus target variable
 
 Author: Samuel Castan
 Created: Oct 2023

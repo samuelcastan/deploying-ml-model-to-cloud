@@ -5,20 +5,30 @@ Author: Samuel Castan
 Created: Oct 2023
 Last Modified: Oct 2023
 '''
-
 import pandas as pd
 
-df = pd.read_csv("data/raw/census.csv")
 
-df.columns = [column.replace(" ", "") for column in df.columns]
+def clean_data():
+    
+    # Read raw data
+    df = pd.read_csv("data/raw/census.csv")
 
-columns = ["workclass", "education", "marital-status", "occupation", "relationship", "race", "sex", "native-country", "salary"]
+    # Remove whitespaces to column names
+    df.columns = [column.replace(" ", "") for column in df.columns]
 
-for column in columns:
-    df[column] = df[column].str.replace(" ", "")
+    # Columns to remove also whitespaces
+    columns = ["workclass", "education", "marital-status", "occupation", "relationship", "race", "sex", "native-country", "salary"]
 
-# Remove duplicates
-df = df.drop_duplicates()
+    # Remove whitespaces to the values of categorical columns plus target variables
+    for column in columns:
+        df[column] = df[column].str.replace(" ", "")
 
-# Export cleaned dataset
-df.to_csv("data/clean/census.csv", index=False)
+    # Remove duplicates
+    df = df.drop_duplicates()
+
+    # Export cleaned dataset
+    df.to_csv("data/clean/census.csv", index=False)
+
+
+if __name__ == '__main__':
+    clean_data()

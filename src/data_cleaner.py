@@ -9,7 +9,7 @@ import pandas as pd
 
 
 def clean_data():
-    
+
     # Read raw data
     df = pd.read_csv("data/raw/census.csv")
 
@@ -17,7 +17,8 @@ def clean_data():
     df.columns = [column.replace(" ", "") for column in df.columns]
 
     # Columns to remove also whitespaces
-    columns = ["workclass", "education", "marital-status", "occupation", "relationship", "race", "sex", "native-country", "salary"]
+    columns = ["workclass", "education", "marital-status", "occupation",
+               "relationship", "race", "sex", "native-country", "salary"]
 
     # Remove whitespaces to the values of categorical columns plus target variables
     for column in columns:

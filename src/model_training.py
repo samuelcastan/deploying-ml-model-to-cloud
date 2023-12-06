@@ -1,24 +1,26 @@
 import pandas as pd
 import joblib
-import constants
-
+import csv
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
-
+from sklearn.metrics import classification_report
+import constants
 
 def balance_dataset(X, y, test_size, random_state):
-    ''''
-    Receives an imbalanced dataset and returns features and target variable with same proportions downsampling the mayority class
+    '''
+    Receives an imbalanced dataset and returns features and target variable with the same proportions downsampling the majority class
 
     Inputs:
         X: Independent variables
-        y: Target or dependendent variable
+        y: Target or dependent variable
+        test_size: Percentage of the dataset to be tested on
+        random_state: Reproducibility number
     '''
 
-    # First split to obtain testing dastaset and temporal set for balancing the classes
+    # First split to obtain the testing dataset and temporal set for balancing the classes
     X_temp, X_test, y_temp, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state)
 
@@ -39,22 +41,18 @@ def balance_dataset(X, y, test_size, random_state):
 
     return X_train, X_test, y_train, y_test
 
-
 def make_pipeline(X_train, y_train):
     '''
-    Trains the the entire ML inference pipeline: should train on the provided data. 
+    Trains the entire ML inference pipeline: should train on the provided data. 
 
     Inputs:
-        data: Dataframe containing features and target variables
-        cat_features: List of categorical features 
-        num_features: List of numerical features
-        target: Target Variables
+        X_train: 
+        y_train: 
 
     Output:
-        inference_pipeline: Pipeline that one-hot encodes categorical features and trains a Random Forest Model for later saving
+        pipeline: Pipeline that one-hot encodes categorical features and trains a Random Forest Model for later saving
     '''
 
-    
     column_transformer = ColumnTransformer(
         transformers=[
             # name, transformer, columns
@@ -81,8 +79,26 @@ def make_pipeline(X_train, y_train):
 
     pipeline.fit(X_train, y_train)
 
+    model_performance(pipeline, X_test=X_test, y_test=y_test)
+
     return pipeline
 
+def model_performance(pipeline, X_test, y_test):
+
+    # Make predictions on the test set
+    y_pred = pipeline.predict(X_test)
+
+    # Calculate classification metrics
+    metrics = classification_report(y_true=y_test, y_pred=y_pred)
+
+    file_path = 'classification_report.txt'
+
+    # Write the report to the specified file
+    with open(file_path, 'w') as file:
+        print(metrics, file=file)
+    
+    
+    
 
 if __name__ == '__main__':
     # Read data
@@ -94,8 +110,11 @@ if __name__ == '__main__':
 
     X_train, X_test, y_train, y_test = balance_dataset(
         X, y, test_size=constants.TEST_SIZE, random_state=constants.RANDOM_STATE)
+
     
+    # train pipeline
     pipeline = make_pipeline(X_train=X_train, y_train=y_train)
+
 
     # Save pipeline
     joblib.dump(pipeline, "model/inference_pipeline.pkl")

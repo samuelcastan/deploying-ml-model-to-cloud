@@ -91,7 +91,7 @@ def model_performance(pipeline, X_test, y_test):
     # Calculate classification metrics
     metrics = classification_report(y_true=y_test, y_pred=y_pred)
 
-    file_path = 'classification_report.txt'
+    file_path = './model/classification_report.txt'
 
     # Write the report to the specified file
     with open(file_path, 'w') as file:

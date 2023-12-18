@@ -5,8 +5,9 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report
+from sklearn.metrics import precision_score, recall_score, accuracy_score, balanced_accuracy_score
 import constants
+
 
 def balance_dataset(X, y, test_size, random_state):
     """"
@@ -19,7 +20,8 @@ def balance_dataset(X, y, test_size, random_state):
         random_state: Reproducibility number
     """
 
-    # First split to obtain the testing dataset and temporal set for balancing the classes
+    # First split to obtain the testing dataset and temporal set for balancing
+    # the classes
     X_temp, X_test, y_temp, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state)
 
@@ -30,23 +32,22 @@ def balance_dataset(X, y, test_size, random_state):
 
     undersampling_size = len(df_temp[df_temp[constants.TARGET] == ">50K"])
 
-    df_temp = pd.concat(
-        [df_temp[df_temp[constants.TARGET] == "<=50K"].sample(undersampling_size),
-         df_temp[df_temp[constants.TARGET] == ">50K"]]
-    )
+    df_temp = pd.concat([df_temp[df_temp[constants.TARGET] == "<=50K"].sample(
+        undersampling_size), df_temp[df_temp[constants.TARGET] == ">50K"]])
 
     X_train = df_temp[constants.CAT_FEATURES + constants.NUM_FEATURES]
     y_train = df_temp[constants.TARGET]
 
     return X_train, X_test, y_train, y_test
 
+
 def train_pipeline(X_train, y_train):
     '''
-    Trains the entire ML inference pipeline: should train on the provided data. 
+    Trains the entire ML inference pipeline: should train on the provided data.
 
     Inputs:
-        X_train: 
-        y_train: 
+        X_train:
+        y_train:
 
     Output:
         pipeline: Pipeline that one-hot encodes categorical features and trains a Random Forest Model for later saving
@@ -82,27 +83,76 @@ def train_pipeline(X_train, y_train):
 
     return pipeline
 
+
 def inference(pipeline, X_pred):
     """
-    
+
     """
 
     return pipeline.predict(X_pred)
 
-def model_performance(pipeline, X_test, y_test):
+
+def model_performance(pipeline, X_test, y_test, in_place=True):
 
     # Make predictions on the test set
-    y_pred = pipeline.predict(X_test)
+    y_pred = inference(pipeline, X_test)
 
-    # Calculate classification metrics
-    metrics = classification_report(y_true=y_test, y_pred=y_pred)
+    # Calculate metrics
+    accuracy = accuracy_score(y_true=y_test, y_pred=y_pred)
+    balanced_accuracy = balanced_accuracy_score(y_true=y_test, y_pred=y_pred)
+    recall_50k_up = recall_score(
+        y_true=y_test,
+        y_pred=y_pred,
+        pos_label=">50K")
+    recall_50k_low = recall_score(
+        y_true=y_test,
+        y_pred=y_pred,
+        pos_label="<=50K")
+    precision_50k_up = precision_score(
+        y_true=y_test, y_pred=y_pred, pos_label=">50K")
+    precision_50k_low = precision_score(
+        y_true=y_test, y_pred=y_pred, pos_label="<=50K")
 
+    # Path to save metrics report
     file_path = './model/classification_report.txt'
 
-    # Write the report to the specified file
     with open(file_path, 'w') as file:
-        print(metrics, file=file)
-    
+        file.write("Accuracy: {:.4f}\n".format(accuracy))
+        file.write("Balanced Accuracy: {:.4f}\n".format(balanced_accuracy))
+        file.write("Recall (>50K): {:.4f}\n".format(recall_50k_up))
+        file.write("Recall (<=50K): {:.4f}\n".format(recall_50k_low))
+        file.write("Precision (>50K): {:.4f}\n".format(precision_50k_up))
+        file.write("Precision (<=50K): {:.4f}\n".format(precision_50k_low))
+
+
+def data_slicing_evaluation(pipeline, X_test, y_test, cat_features):
+    pass
+
+    df_temp = pd.concat([X_test, y_test], axis=1)
+
+    for category in cat_features:
+        for value in df[category].unique():
+            X = df_temp[df_temp[category] == value].drop(["salary"], axis=1)
+            y = df_temp[df_temp[category] == value]["salary"]
+
+            y_pred = pipeline.predict(X)
+
+            precision = round(
+                precision_score(
+                    y_true=y,
+                    y_pred=y_pred,
+                    pos_label=">50K"),
+                2)
+            recall = round(
+                recall_score(
+                    y_true=y,
+                    y_pred=y_pred,
+                    pos_label=">50K"),
+                2)
+
+            print(category, value, precision, recall)
+
+
 def save_pipeline(pipeline):
     """_summary_
 
@@ -110,6 +160,7 @@ def save_pipeline(pipeline):
         pipeline (_type_): _description_
     """
     joblib.dump(pipeline, "model/inference_pipeline.pkl")
+
 
 if __name__ == '__main__':
     # Read data
@@ -122,9 +173,17 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test = balance_dataset(
         X, y, test_size=constants.TEST_SIZE, random_state=constants.RANDOM_STATE)
 
-    
     # train pipeline
     pipeline = train_pipeline(X_train=X_train, y_train=y_train)
+
+    # evaluate model
+    model_performance(pipeline=pipeline, X_test=X_test, y_test=y_test)
+
+    data_slicing_evaluation(
+        pipeline=pipeline,
+        X_test=X_test,
+        y_test=y_test,
+        cat_features=constants.CAT_FEATURES)
 
     # Save pipeline
     save_pipeline(pipeline=pipeline)

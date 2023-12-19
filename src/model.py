@@ -42,16 +42,16 @@ def balance_dataset(X, y, test_size, random_state):
 
 
 def train_pipeline(X_train, y_train):
-    '''
+    """""
     Trains the entire ML inference pipeline: should train on the provided data.
 
     Inputs:
-        X_train:
-        y_train:
+        X_train: Instances with features to train on
+        y_train: Target variable
 
     Output:
         pipeline: Pipeline that one-hot encodes categorical features and trains a Random Forest Model for later saving
-    '''
+    """
 
     column_transformer = ColumnTransformer(
         transformers=[

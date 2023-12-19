@@ -86,10 +86,19 @@ def train_pipeline(X_train, y_train):
 
 def inference(pipeline, X_pred):
     """
+    Predicts new instances using the trained pipeline
 
-    """
-
-    return pipeline.predict(X_pred)
+    Args:
+        pipeline (Sklearn Pipeline): Trained pipeline
+        X_pred (DataFrame-Numpy Array): Instance(s) to predict on
+ 
+    Returns:
+        y_pred (Numpy Array): Predicted classes for X_pred
+    """    
+    
+    y_pred = pipeline.predict(X_pred)
+    
+    return y_pred
 
 
 def model_performance(pipeline, X_test, y_test, in_place=True):

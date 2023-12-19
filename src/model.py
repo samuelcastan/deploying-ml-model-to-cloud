@@ -41,7 +41,7 @@ def balance_dataset(X, y, test_size, random_state):
     return X_train, X_test, y_train, y_test
 
 
-def train_pipeline(X_train, y_train):
+def train_pipeline(X_train, y_train, random_state=42):
     """""
     Trains the entire ML inference pipeline: should train on the provided data.
 
@@ -56,7 +56,7 @@ def train_pipeline(X_train, y_train):
     column_transformer = ColumnTransformer(
         transformers=[
             # name, transformer, columns
-            ('cat', OneHotEncoder(handle_unknown="ignore"), constants.CAT_FEATURES),
+            ('cat', OneHotEncoder(handle_unknown="ignore", random_state=random_state), constants.CAT_FEATURES),
         ],
         # Ignore numerical columns
         remainder='passthrough'
@@ -67,7 +67,7 @@ def train_pipeline(X_train, y_train):
         n_jobs=-1,
         max_depth=15,
         max_features="sqrt",
-        random_state=42
+        random_state=random_state
     )
 
     pipeline = Pipeline(
@@ -183,7 +183,7 @@ if __name__ == '__main__':
         X, y, test_size=constants.TEST_SIZE, random_state=constants.RANDOM_STATE)
 
     # train pipeline
-    pipeline = train_pipeline(X_train=X_train, y_train=y_train)
+    pipeline = train_pipeline(X_train=X_train, y_train=y_train, random_state=constants.RANDOM_STATE)
 
     # evaluate model
     model_performance(pipeline=pipeline, X_test=X_test, y_test=y_test)

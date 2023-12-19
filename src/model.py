@@ -56,7 +56,7 @@ def train_pipeline(X_train, y_train, random_state=42):
     column_transformer = ColumnTransformer(
         transformers=[
             # name, transformer, columns
-            ('cat', OneHotEncoder(handle_unknown="ignore", random_state=random_state), constants.CAT_FEATURES),
+            ('cat', OneHotEncoder(handle_unknown="ignore"), constants.CAT_FEATURES),
         ],
         # Ignore numerical columns
         remainder='passthrough'
@@ -162,13 +162,8 @@ def data_slicing_evaluation(pipeline, X_test, y_test, cat_features):
             print(category, value, precision, recall)
 
 
-def save_pipeline(pipeline):
-    """_summary_
-
-    Args:
-        pipeline (_type_): _description_
-    """
-    joblib.dump(pipeline, "model/inference_pipeline.pkl")
+def save_pipeline(pipeline, path):
+    joblib.dump(pipeline, path)
 
 
 if __name__ == '__main__':
@@ -188,11 +183,11 @@ if __name__ == '__main__':
     # evaluate model
     model_performance(pipeline=pipeline, X_test=X_test, y_test=y_test)
 
-    data_slicing_evaluation(
-        pipeline=pipeline,
-        X_test=X_test,
-        y_test=y_test,
-        cat_features=constants.CAT_FEATURES)
+    # data_slicing_evaluation(
+    #     pipeline=pipeline,
+    #     X_test=X_test,
+    #     y_test=y_test,
+    #     cat_features=constants.CAT_FEATURES)
 
     # Save pipeline
-    save_pipeline(pipeline=pipeline)
+    save_pipeline(pipeline=pipeline, path=constants.PIPELINE_PATH)

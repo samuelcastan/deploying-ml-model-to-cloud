@@ -91,13 +91,13 @@ def inference(pipeline, X_pred):
     Args:
         pipeline (Sklearn Pipeline): Trained pipeline
         X_pred (DataFrame-Numpy Array): Instance(s) to predict on
- 
+
     Returns:
         y_pred (Numpy Array): Predicted classes for X_pred
-    """    
-    
+    """
+
     y_pred = pipeline.predict(X_pred)
-    
+
     return y_pred
 
 
@@ -178,7 +178,10 @@ if __name__ == '__main__':
         X, y, test_size=constants.TEST_SIZE, random_state=constants.RANDOM_STATE)
 
     # train pipeline
-    pipeline = train_pipeline(X_train=X_train, y_train=y_train, random_state=constants.RANDOM_STATE)
+    pipeline = train_pipeline(
+        X_train=X_train,
+        y_train=y_train,
+        random_state=constants.RANDOM_STATE)
 
     # evaluate model
     model_performance(pipeline=pipeline, X_test=X_test, y_test=y_test)

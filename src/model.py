@@ -1,5 +1,6 @@
 import pandas as pd
 import joblib
+import warnings
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -8,6 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_score, recall_score, accuracy_score, balanced_accuracy_score
 import constants
 
+warnings.filterwarnings("ignore")
 
 def balance_dataset(X, y, test_size, random_state):
     """"
@@ -134,33 +136,30 @@ def model_performance(pipeline, X_test, y_test, in_place=True):
         file.write("Precision (<=50K): {:.4f}\n".format(precision_50k_low))
 
 
-def data_slicing_evaluation(pipeline, X_test, y_test, cat_features):
-    pass
+def data_slicing_evaluation(pipeline, X_test, y_test, cat_features=["education"]):
+    """_summary_
+
+    Args:
+        pipeline (Sklearn Pipeline): _description_
+        X_test (DataFrame-Numpy Array): _description_
+        y_test (DataFrame-Numpy Array): _description_
+        cat_features (list, optional): _description_. Defaults to ["education"].
+    """
 
     df_temp = pd.concat([X_test, y_test], axis=1)
 
     for category in cat_features:
         for value in df[category].unique():
-            X = df_temp[df_temp[category] == value].drop(["salary"], axis=1)
-            y = df_temp[df_temp[category] == value]["salary"]
+            X_category = df_temp[df_temp[category] == value].drop(["salary"], axis=1)
+            y_category = df_temp[df_temp[category] == value]["salary"]
 
-            y_pred = pipeline.predict(X)
+            y_pred = pipeline.predict(X_category)
+            
+            balaced_accuracy = balanced_accuracy_score(y_true=y_category, y_pred=y_pred)
 
-            precision = round(
-                precision_score(
-                    y_true=y,
-                    y_pred=y_pred,
-                    pos_label=">50K"),
-                2)
-            recall = round(
-                recall_score(
-                    y_true=y,
-                    y_pred=y_pred,
-                    pos_label=">50K"),
-                2)
-
-            print(category, value, precision, recall)
-
+            with open("test.txt", "w") as file:
+                file.write(category, value, balaced_accuracy)
+            
 
 def save_pipeline(pipeline, path):
     joblib.dump(pipeline, path)
@@ -186,11 +185,10 @@ if __name__ == '__main__':
     # evaluate model
     model_performance(pipeline=pipeline, X_test=X_test, y_test=y_test)
 
-    # data_slicing_evaluation(
-    #     pipeline=pipeline,
-    #     X_test=X_test,
-    #     y_test=y_test,
-    #     cat_features=constants.CAT_FEATURES)
+    data_slicing_evaluation(
+        pipeline=pipeline,
+        X_test=X_test,
+        y_test=y_test)
 
     # Save pipeline
     save_pipeline(pipeline=pipeline, path=constants.PIPELINE_PATH)

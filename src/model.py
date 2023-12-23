@@ -137,34 +137,37 @@ def model_performance(pipeline, X_test, y_test, in_place=True):
 
 
 def data_slicing_evaluation(pipeline, X_test, y_test, cat_features=["education"]):
-    """_summary_
+    """
+    Performs the balanced accuracy for value slice in the categorical features
 
     Args:
-        pipeline (Sklearn Pipeline): _description_
-        X_test (DataFrame-Numpy Array): _description_
-        y_test (DataFrame-Numpy Array): _description_
-        cat_features (list, optional): _description_. Defaults to ["education"].
+        pipeline (Sklearn Pipeline): Trained pipeline
+        X_test (DataFrame-Numpy Array): Instances to predict on
+        y_test (DataFrame-Numpy Array): Target variable
+        cat_features (list, optional): cateogorical features to slice on. Defaults to ["education"].
     """
 
     df_temp = pd.concat([X_test, y_test], axis=1)
 
-    try:        
-        for category in cat_features:
-            for value in df[category].unique():
-                X_category = df_temp[df_temp[category] == value].drop(["salary"], axis=1)
-                y_category = df_temp[df_temp[category] == value]["salary"]
+    try:
+        with open("model/data_slice_performance.txt", "w") as file:        
+            file.write("Category - Value - Balanced Acccuracy\n")
+            for category in cat_features:
+                for value in df[category].unique():
+                    X_category = df_temp[df_temp[category] == value].drop(["salary"], axis=1)
+                    y_category = df_temp[df_temp[category] == value]["salary"]
 
-                y_pred = pipeline.predict(X_category)
-                
-                balaced_accuracy = balanced_accuracy_score(y_true=y_category, y_pred=y_pred)
-                
-                print(category, value, balaced_accuracy)
-    
+                    y_pred = pipeline.predict(X_category)
+                    
+                    balaced_accuracy = balanced_accuracy_score(y_true=y_category, y_pred=y_pred)
+                    output_line = f"{category} {value} {balaced_accuracy}\n"
+                    file.write(output_line)
+        
     except ValueError:
+        with open("model/data_slice_performance.txt", "a") as file:
+            file.write("No instances for {}".format(value))
         
-        print("No instances for {}".format(value))
-        
-            
+
 
 def save_pipeline(pipeline, path):
     joblib.dump(pipeline, path)

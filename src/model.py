@@ -11,6 +11,7 @@ import constants
 
 warnings.filterwarnings("ignore")
 
+
 def balance_dataset(X, y, test_size, random_state):
     """"
     Receives an imbalanced dataset and returns features and target variable with the same proportions downsampling the majority class
@@ -136,7 +137,11 @@ def model_performance(pipeline, X_test, y_test, in_place=True):
         file.write("Precision (<=50K): {:.4f}\n".format(precision_50k_low))
 
 
-def data_slicing_evaluation(pipeline, X_test, y_test, cat_features=["education"]):
+def data_slicing_evaluation(
+        pipeline,
+        X_test,
+        y_test,
+        cat_features=["education"]):
     """
     Performs the balanced accuracy for value slice in the categorical features
 
@@ -150,23 +155,24 @@ def data_slicing_evaluation(pipeline, X_test, y_test, cat_features=["education"]
     df_temp = pd.concat([X_test, y_test], axis=1)
 
     try:
-        with open("model/data_slice_performance.txt", "w") as file:        
+        with open("model/data_slice_performance.txt", "w") as file:
             file.write("Category - Value - Balanced Acccuracy\n")
             for category in cat_features:
                 for value in df[category].unique():
-                    X_category = df_temp[df_temp[category] == value].drop(["salary"], axis=1)
+                    X_category = df_temp[df_temp[category]
+                                         == value].drop(["salary"], axis=1)
                     y_category = df_temp[df_temp[category] == value]["salary"]
 
                     y_pred = pipeline.predict(X_category)
-                    
-                    balaced_accuracy = balanced_accuracy_score(y_true=y_category, y_pred=y_pred)
+
+                    balaced_accuracy = balanced_accuracy_score(
+                        y_true=y_category, y_pred=y_pred)
                     output_line = f"{category} {value} {balaced_accuracy}\n"
                     file.write(output_line)
-        
+
     except ValueError:
         with open("model/data_slice_performance.txt", "a") as file:
             file.write("No instances for {}".format(value))
-        
 
 
 def save_pipeline(pipeline, path):

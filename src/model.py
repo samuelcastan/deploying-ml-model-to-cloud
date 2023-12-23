@@ -148,17 +148,22 @@ def data_slicing_evaluation(pipeline, X_test, y_test, cat_features=["education"]
 
     df_temp = pd.concat([X_test, y_test], axis=1)
 
-    for category in cat_features:
-        for value in df[category].unique():
-            X_category = df_temp[df_temp[category] == value].drop(["salary"], axis=1)
-            y_category = df_temp[df_temp[category] == value]["salary"]
+    try:        
+        for category in cat_features:
+            for value in df[category].unique():
+                X_category = df_temp[df_temp[category] == value].drop(["salary"], axis=1)
+                y_category = df_temp[df_temp[category] == value]["salary"]
 
-            y_pred = pipeline.predict(X_category)
-            
-            balaced_accuracy = balanced_accuracy_score(y_true=y_category, y_pred=y_pred)
-
-            with open("test.txt", "w") as file:
-                file.write(category, value, balaced_accuracy)
+                y_pred = pipeline.predict(X_category)
+                
+                balaced_accuracy = balanced_accuracy_score(y_true=y_category, y_pred=y_pred)
+                
+                print(category, value, balaced_accuracy)
+    
+    except ValueError:
+        
+        print("No instances for {}".format(value))
+        
             
 
 def save_pipeline(pipeline, path):
@@ -188,7 +193,8 @@ if __name__ == '__main__':
     data_slicing_evaluation(
         pipeline=pipeline,
         X_test=X_test,
-        y_test=y_test)
+        y_test=y_test,
+        cat_features=constants.CAT_FEATURES)
 
     # Save pipeline
     save_pipeline(pipeline=pipeline, path=constants.PIPELINE_PATH)

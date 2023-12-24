@@ -213,6 +213,7 @@ if __name__ == '__main__':
     # evaluate model
     model_performance(pipeline=pipeline, X_test=X_test, y_test=y_test)
 
+    # perform data slicing
     data_slicing_evaluation(
         pipeline=pipeline,
         X_test=X_test,

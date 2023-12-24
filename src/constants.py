@@ -24,6 +24,8 @@ TRAINING_DATASET = 'data/clean/census.csv'
 
 PIPELINE_PATH = "model/inference_pipeline.pkl"
 
+RAW_DATA_PATH = "data/raw/census.csv"
+
 TEST_SIZE = 0.3
 
 RANDOM_STATE = 42

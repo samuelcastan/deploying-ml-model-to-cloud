@@ -183,6 +183,13 @@ def data_slicing_evaluation(
 
 
 def save_pipeline(pipeline, path):
+    """
+    Saves trained pipeline in a local path
+
+    Args:
+        pipeline (Sklearn pipeline): Trained pipeline
+        path (string): Local path to save the pipeline
+    """
     joblib.dump(pipeline, path)
 
 

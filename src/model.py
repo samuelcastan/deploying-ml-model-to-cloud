@@ -1,6 +1,13 @@
+"""
+Trains a Random Forest pipeline on a balanced dataset and evaluates its performance
+
+Created by Samuel Castan
+Last Updated: Dec 2023
+"""
+
+import warnings
 import pandas as pd
 import joblib
-import warnings
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -14,7 +21,7 @@ warnings.filterwarnings("ignore")
 
 def balance_dataset(X, y, test_size, random_state):
     """"
-    Receives an imbalanced dataset and returns features and target variable with the same proportions downsampling the majority class
+    Balances a dataset for training by downsampling to the same length of the minority class
 
     Inputs:
         X: Independent variables
@@ -53,7 +60,7 @@ def train_pipeline(X_train, y_train, random_state=42):
         y_train: Target variable
 
     Output:
-        pipeline: Pipeline that one-hot encodes categorical features and trains a Random Forest Model for later saving
+        pipeline: Random Forest pipeline
     """
 
     column_transformer = ColumnTransformer(

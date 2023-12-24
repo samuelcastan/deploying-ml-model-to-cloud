@@ -6,7 +6,15 @@ Date: Nov 2023
 '''
 
 
-CAT_FEATURES = ["workclass", "education", "marital-status", "occupation", "relationship", "race", "sex", "native-country"]
+CAT_FEATURES = [
+    "workclass",
+    "education",
+    "marital-status",
+    "occupation",
+    "relationship",
+    "race",
+    "sex",
+    "native-country"]
 
 NUM_FEATURES = ["age", "capital-gain", "capital-loss", "hours-per-week"]
 
@@ -19,4 +27,3 @@ PIPELINE_PATH = "model/inference_pipeline.pkl"
 TEST_SIZE = 0.3
 
 RANDOM_STATE = 42
-

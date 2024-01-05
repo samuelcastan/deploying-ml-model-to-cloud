@@ -1,0 +1,21 @@
+name: basic_cleaning
+python_env: python_env.yaml
+
+entry_points:
+  main:
+    parameters:
+
+      raw_data_path:
+        description: input artifact taken from the EDA step
+        type: string
+
+      clean_data_path:
+        description: name for the cleaned data to store as artifcat
+        type: string
+
+      keep_columns:
+        description: Columns to keep for the cleaned dataset
+        type: list
+
+    command: >-
+        python run.py --raw_data_path {raw_data_path} --clean_data_path {clean_data_path} --keep_columns {keep_columns}

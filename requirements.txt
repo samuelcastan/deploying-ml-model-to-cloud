@@ -12,3 +12,5 @@ matplotlib
 autopep8
 pylint
 joblib
+hydra-core
+virtualenv

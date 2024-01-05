@@ -1,6 +1,6 @@
-Accuracy: 0.7859
-Balanced Accuracy: 0.8211
-Recall (>50K): 0.8893
-Recall (<=50K): 0.7530
-Precision (>50K): 0.5340
-Precision (<=50K): 0.9553
+Accuracy: 0.7842
+Balanced Accuracy: 0.8188
+Recall (>50K): 0.8859
+Recall (<=50K): 0.7518
+Precision (>50K): 0.5318
+Precision (<=50K): 0.9539

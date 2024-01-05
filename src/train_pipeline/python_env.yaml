@@ -8,4 +8,6 @@ build_dependencies:
 # Dependencies required to run the project.
 dependencies:
   - pandas
+  - joblib
+  - sklearn
   - mlflow==2.9.2

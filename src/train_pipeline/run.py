@@ -1,12 +1,13 @@
 """
-Trains a Random Forest pipeline on a balanced dataset and 
+Trains a Random Forest pipeline on a balanced dataset and
 evaluates its performance
 
 Created by Samuel Castan
-Last Updated: Dec 2023
+Last Updated: Jan 2024
 """
 
 import warnings
+import argparse
 import pandas as pd
 import joblib
 from sklearn.model_selection import train_test_split
@@ -14,20 +15,69 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import precision_score, recall_score, accuracy_score, balanced_accuracy_score
+from sklearn.metrics import precision_score, recall_score
+from sklearn.metrics import accuracy_score, balanced_accuracy_score
 import constants
 
 warnings.filterwarnings("ignore")
 
 
-def balance_dataset(X, y, test_size, random_state):
+def go(args):
+
+    # Read data
+    df = pd.read_csv(args.clean_data)
+
+    features = args.cat_features.split(",")
+
+    # Features and target variables
+    X = df[features]
+    y = df[args.target]
+
+    X_train, X_test, y_train, y_test = balance_dataset(
+        X,
+        y,
+        test_size=args.test_size,
+        features=features,
+        target=args.target,
+        random_state=args.random_state
+    )
+
+    # train pipeline
+    pipeline = train_pipeline(
+        features=features,
+        X_train=X_train,
+        y_train=y_train,
+        n_estimators=args.n_estimators,
+        max_depth=args.max_depth,
+        max_features=args.max_features,
+        random_state=args.random_state_rf,
+        n_jobs=args.n_jobs)
+
+    # evaluate model
+    model_performance(pipeline=pipeline, X_test=X_test, y_test=y_test)
+
+    # perform data slicing
+    data_slicing_evaluation(
+        pipeline=pipeline,
+        X_test=X_test,
+        y_test=y_test,
+        cat_features=features)
+
+    # Save pipeline
+    save_pipeline(pipeline=pipeline, path=constants.PIPELINE_PATH)
+
+
+def balance_dataset(X, y, test_size, features, target, random_state):
     """"
-    Balances a dataset for training by downsampling to the same length of the minority class
+    Balances a dataset for training by downsampling to the
+    same length of the minority class
 
     Inputs:
         X: Independent variables
         y: Target or dependent variable
         test_size: Percentage of the dataset to be tested on
+        features: List of feature names to train on
+        target: Target variable to train on
         random_state: Reproducibility number
     """
 
@@ -41,24 +91,38 @@ def balance_dataset(X, y, test_size, random_state):
 
     del X_temp, y_temp
 
-    undersampling_size = len(df_temp[df_temp[constants.TARGET] == ">50K"])
+    undersampling_size = len(df_temp[df_temp[target] == ">50K"])
 
-    df_temp = pd.concat([df_temp[df_temp[constants.TARGET] == "<=50K"].sample(
-        undersampling_size), df_temp[df_temp[constants.TARGET] == ">50K"]])
+    df_temp = pd.concat([df_temp[df_temp[target] == "<=50K"].sample(
+        undersampling_size), df_temp[df_temp[target] == ">50K"]])
 
-    X_train = df_temp[constants.CAT_FEATURES + constants.NUM_FEATURES]
-    y_train = df_temp[constants.TARGET]
+    X_train = df_temp[features]
+    y_train = df_temp[target]
 
     return X_train, X_test, y_train, y_test
 
 
-def train_pipeline(X_train, y_train, random_state=42):
+def train_pipeline(
+        features,
+        X_train,
+        y_train,
+        n_estimators,
+        max_depth,
+        max_features,
+        random_state,
+        n_jobs):
     """""
     Trains the entire ML inference pipeline: should train on the provided data.
 
     Inputs:
-        X_train: Instances with features to train on
+        features: List of feature names to train on
+        X_train: Instances to train on
         y_train: Target variable
+        n_estimators: Random Forest hyperparameter
+        max_depth: Random Forest hyperparameter
+        max_features: Random Forest hyperparameter
+        random_state: Random Forest hyperparameter
+        n_job: Random Forest hyperparameter
 
     Output:
         pipeline: Random Forest pipeline
@@ -67,18 +131,18 @@ def train_pipeline(X_train, y_train, random_state=42):
     column_transformer = ColumnTransformer(
         transformers=[
             # name, transformer, columns
-            ('cat', OneHotEncoder(handle_unknown="ignore"), constants.CAT_FEATURES),
+            ('cat', OneHotEncoder(handle_unknown="ignore"), features),
         ],
         # Ignore numerical columns
         remainder='passthrough'
     )
 
     classifier = RandomForestClassifier(
-        n_estimators=100,
-        n_jobs=-1,
-        max_depth=15,
-        max_features="sqrt",
-        random_state=random_state
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        max_features=max_features,
+        random_state=random_state,
+        n_jobs=n_jobs
     )
 
     pipeline = Pipeline(
@@ -89,8 +153,6 @@ def train_pipeline(X_train, y_train, random_state=42):
     )
 
     pipeline.fit(X_train, y_train)
-
-    model_performance(pipeline, X_test=X_test, y_test=y_test)
 
     return pipeline
 
@@ -157,16 +219,17 @@ def data_slicing_evaluation(
         pipeline (Sklearn Pipeline): Trained pipeline
         X_test (DataFrame-Numpy Array): Instances to predict on
         y_test (DataFrame-Numpy Array): Target variable
-        cat_features (list, optional): cateogorical features to slice on. Defaults to ["education"].
+        cat_features (list, optional): cateogorical features to slice on.
+        Defaults to ["education"].
     """
 
     df_temp = pd.concat([X_test, y_test], axis=1)
 
     try:
-        with open("model/data_slice_performance.txt", "w") as file:
+        with open("model/data_slice_report.txt", "w") as file:
             file.write("Category - Value - Balanced Acccuracy\n")
             for category in cat_features:
-                for value in df[category].unique():
+                for value in df_temp[category].unique():
                     X_category = df_temp[df_temp[category]
                                          == value].drop(["salary"], axis=1)
                     y_category = df_temp[df_temp[category] == value]["salary"]
@@ -195,31 +258,70 @@ def save_pipeline(pipeline, path):
 
 
 if __name__ == '__main__':
-    # Read data
-    df = pd.read_csv(constants.TRAINING_DATASET)
 
-    # Features and target variables
-    X = df[constants.CAT_FEATURES + constants.NUM_FEATURES]
-    y = df[constants.TARGET]
+    parser = argparse.ArgumentParser(
+        description="Sklearn Pipeline training and evaluation")
 
-    X_train, X_test, y_train, y_test = balance_dataset(
-        X, y, test_size=constants.TEST_SIZE, random_state=constants.RANDOM_STATE)
+    parser.add_argument(
+        "--clean_data",
+        type=str,
+        help="Path to CSV File where cleaned data is stored"
+    )
 
-    # train pipeline
-    pipeline = train_pipeline(
-        X_train=X_train,
-        y_train=y_train,
-        random_state=constants.RANDOM_STATE)
+    parser.add_argument(
+        "--cat_features",
+        type=str,
+        help="List of categorical columns to use for training"
+    )
 
-    # evaluate model
-    model_performance(pipeline=pipeline, X_test=X_test, y_test=y_test)
+    parser.add_argument(
+        "--target",
+        type=str,
+        help="Target variable"
+    )
 
-    # perform data slicing
-    data_slicing_evaluation(
-        pipeline=pipeline,
-        X_test=X_test,
-        y_test=y_test,
-        cat_features=constants.CAT_FEATURES)
+    parser.add_argument(
+        "--test_size",
+        type=float,
+        help="Size (percentage in decimal) to split the training dataset"
+    )
 
-    # Save pipeline
-    save_pipeline(pipeline=pipeline, path=constants.PIPELINE_PATH)
+    parser.add_argument(
+        "--random_state",
+        type=int,
+        help="Random state number for reproducibility"
+    )
+
+    parser.add_argument(
+        "--n_estimators",
+        type=int,
+        help="Ranfom forest hyperparameter"
+    )
+
+    parser.add_argument(
+        "--max_depth",
+        type=int,
+        help="Random forest hyperparameter"
+    )
+
+    parser.add_argument(
+        "--max_features",
+        type=str,
+        help="Random forest hyperparameters"
+    )
+
+    parser.add_argument(
+        "--random_state_rf",
+        type=int,
+        help="Random state number for reproducibility for the Random Forest"
+    )
+
+    parser.add_argument(
+        "--n_jobs",
+        type=int,
+        help="Random forest hyperparameter"
+    )
+
+    args = parser.parse_args()
+
+    go(args)

@@ -10,4 +10,3 @@ dependencies:
   - pandas
   - joblib
   - sklearn
-  - mlflow==2.9.2

@@ -17,7 +17,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_score, recall_score
 from sklearn.metrics import accuracy_score, balanced_accuracy_score
-import constants
 
 warnings.filterwarnings("ignore")
 
@@ -64,7 +63,7 @@ def go(args):
         cat_features=features)
 
     # Save pipeline
-    save_pipeline(pipeline=pipeline, path=constants.PIPELINE_PATH)
+    save_pipeline(pipeline=pipeline, path=args.pipeline_path)
 
 
 def balance_dataset(X, y, test_size, features, target, random_state):
@@ -196,7 +195,7 @@ def model_performance(pipeline, X_test, y_test, in_place=True):
         y_true=y_test, y_pred=y_pred, pos_label="<=50K")
 
     # Path to save metrics report
-    file_path = './model/classification_report.txt'
+    file_path = args.classification_report_path
 
     with open(file_path, 'w') as file:
         file.write("Accuracy: {:.4f}\n".format(accuracy))
@@ -226,7 +225,7 @@ def data_slicing_evaluation(
     df_temp = pd.concat([X_test, y_test], axis=1)
 
     try:
-        with open("model/data_slice_report.txt", "w") as file:
+        with open(args.data_slice_report, "w") as file:
             file.write("Category - Value - Balanced Acccuracy\n")
             for category in cat_features:
                 for value in df_temp[category].unique():
@@ -283,43 +282,71 @@ if __name__ == '__main__':
     parser.add_argument(
         "--test_size",
         type=float,
-        help="Size (percentage in decimal) to split the training dataset"
+        help="Size (percentage in decimal) to split the training dataset",
+        required=True
     )
 
     parser.add_argument(
         "--random_state",
         type=int,
-        help="Random state number for reproducibility"
+        help="Random state number for reproducibility",
+        required=True
     )
 
     parser.add_argument(
         "--n_estimators",
         type=int,
-        help="Ranfom forest hyperparameter"
+        help="Ranfom forest hyperparameter",
+        required=True
     )
 
     parser.add_argument(
         "--max_depth",
         type=int,
-        help="Random forest hyperparameter"
+        help="Random forest hyperparameter",
+        required=True
     )
 
     parser.add_argument(
         "--max_features",
         type=str,
-        help="Random forest hyperparameters"
+        help="Random forest hyperparameters",
+        required=True
     )
 
     parser.add_argument(
         "--random_state_rf",
         type=int,
-        help="Random state number for reproducibility for the Random Forest"
+        help="Random state number for reproducibility for the Random Forest",
+        required=True
     )
 
     parser.add_argument(
         "--n_jobs",
         type=int,
-        help="Random forest hyperparameter"
+        help="Enables using all the CPU cores for traing random forest",
+        required=True
+    )
+
+    parser.add_argument(
+        "--pipeline_path",
+        type=str,
+        help="Path to save trained pipeline",
+        required=True
+    )
+
+    parser.add_argument(
+        "--classification_report_path",
+        type=str,
+        help="Path to save trained pipeline",
+        required=True
+    )
+
+    parser.add_argument(
+        "--data_slice_report",
+        type=str,
+        help="Path to save data slice evaluation report",
+        required=True
     )
 
     args = parser.parse_args()

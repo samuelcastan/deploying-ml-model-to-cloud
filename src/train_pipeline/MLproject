@@ -4,18 +4,51 @@ python_env: python_env.yaml
 entry_points:
   main:
     parameters:
-
-      raw_data_path:
-        description: input artifact taken from the EDA step
+      
+      clean_data:
+        description: Path where clean data was saved locally
         type: string
 
-      clean_data_path:
-        description: name for the cleaned data to store as artifcat
+      cat_features:
+        description: categorical features to use for training and inferencing
         type: string
 
-      keep_columns:
-        description: Columns to keep for the cleaned dataset
-        type: list
+      target:
+        description: target variable  
+        type: string
+
+      test_size:
+        description: Size (percentage in decimal) to split the training dataset
+        type: string
+      
+      random_state:
+        description: Reproducibility number
+        type: string
+      
+      n_estimators:
+        description: Random forest hyperaparameter
+        type: string
+      
+      max_depth:
+        description: Random forest hyperaparameter
+        type: string
+      
+      max_features:
+        description: Random forest hyperaparameter
+        type: string
+      
+      random_state_rf:
+        description: Random state for reproducibility for Random forest model
+        type: string
+
+      n_jobs:
+        description: Enables using all the CPU cores for traing random forest
+        type: string
+      
+      pipeline_path:
+        description: Path to save trained pipeline
+        type: string
+
 
     command: >-
-        python run.py --raw_data_path {raw_data_path} --clean_data_path {clean_data_path} --keep_columns {keep_columns}
+        python run.py --clean_data {clean_data} --cat_features {cat_features} --target {target} --test_size {test_size} --random_state {random_state} --n_estimators {n_estimators} --max_depth {max_depth} --max_features {max_features} --random_state_rf {random_state_rf} --n_jobs {n_jobs} --pipeline_path {pipeline_path}

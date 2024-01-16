@@ -49,6 +49,14 @@ entry_points:
         description: Path to save trained pipeline
         type: string
 
+      classification_report:
+        description: Path to save classification report
+        type: string
+
+      data_slice_report:
+        description: Path to save data slice report
+        type: string
+
 
     command: >-
-        python run.py --clean_data {clean_data} --cat_features {cat_features} --target {target} --test_size {test_size} --random_state {random_state} --n_estimators {n_estimators} --max_depth {max_depth} --max_features {max_features} --random_state_rf {random_state_rf} --n_jobs {n_jobs} --pipeline_path {pipeline_path}
+        python run.py --clean_data {clean_data} --cat_features {cat_features} --target {target} --test_size {test_size} --random_state {random_state} --n_estimators {n_estimators} --max_depth {max_depth} --max_features {max_features} --random_state_rf {random_state_rf} --n_jobs {n_jobs} --pipeline_path {pipeline_path} --classification_report {classification_report} --data_slice_report {data_slice_report}

@@ -7,6 +7,7 @@ Last Updated: Jan 2024
 """
 
 import warnings
+import logging
 import argparse
 import pandas as pd
 import joblib
@@ -241,7 +242,7 @@ def data_slicing_evaluation(
                     file.write(output_line)
 
     except ValueError:
-        with open("model/data_slice_performance.txt", "a") as file:
+        with open(args.data_slice_report, "a") as file:
             file.write("No instances for {}".format(value))
 
 
@@ -336,7 +337,7 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        "--classification_report_path",
+        "--classification_report",
         type=str,
         help="Path to save trained pipeline",
         required=True

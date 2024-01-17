@@ -14,12 +14,12 @@ _steps = [
 def go(config: DictConfig) -> None:
 
     # Steps to execute
-    # steps_par = config['main']['steps']
-    # active_steps = steps_par.split(",") if steps_par != "all" else _steps
+    steps_par = config['main']['steps']
+    active_steps = steps_par.split(",") if steps_par != "all" else _steps
 
     # Move to a temporary directory
     with tempfile.TemporaryDirectory() as tmp_dir:
-        if "basic_cleaning" in _steps:
+        if "basic_cleaning" in active_steps:
             _ = mlflow.run(
                 os.path.join(
                     hydra.utils.get_original_cwd(),
@@ -32,8 +32,8 @@ def go(config: DictConfig) -> None:
                     "keep_columns": config["data"]["keep_columns"]},
             )
 
-        if "train_pipeline" in _steps:
-            pass
+        if "train_pipeline" in active_steps:
+
             _ = mlflow.run(
                 os.path.join(
                     hydra.utils.get_original_cwd(),

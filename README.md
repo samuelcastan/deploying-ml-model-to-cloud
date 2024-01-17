@@ -2,7 +2,7 @@
 
 ## Install requeriments
 ```
-pip install -r requierements
+pip install -r requirements.txt
 ```
 
 ## TRAIN THE ENTIRE PIPELINE

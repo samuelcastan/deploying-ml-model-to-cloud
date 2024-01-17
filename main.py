@@ -59,3 +59,4 @@ def go(config: DictConfig) -> None:
 if __name__ == "__main__":
 
     go()
+

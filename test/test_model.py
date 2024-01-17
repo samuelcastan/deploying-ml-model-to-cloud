@@ -29,4 +29,5 @@ def test_overall_balanced_accuracy(data, features, pipeline):
     y_pred = pipeline.predict(data[features])
     score = balanced_accuracy_score(y_true=y, y_pred=y_pred)
 
-    assert score>=.70
+    assert score >= .70
+    

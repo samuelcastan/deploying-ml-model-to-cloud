@@ -5,14 +5,8 @@ import mlflow
 from omegaconf import DictConfig
 
 _steps = [
-    "basic_cleaning"
-    # "data_check",
-    # "data_split",
-    # "train_random_forest",
-    # NOTE: We do not include this in the steps so it is not run by mistake.
-    # You first need to promote a model export to "prod" before
-    # you can run this, then you need to run this step explicitly
-    #  "test_regression_model"
+    "basic_cleaning",
+    "train_pipeline"
 ]
 
 
@@ -44,8 +38,7 @@ def go(config: DictConfig) -> None:
                 os.path.join(
                     hydra.utils.get_original_cwd(),
                     "src",
-                    "train_pipeline"
-                ),
+                    "train_pipeline"),
                 entry_point="main",
                 parameters={
                     "clean_data": config["file_paths"]["clean_data"],
@@ -56,13 +49,11 @@ def go(config: DictConfig) -> None:
                     "n_estimators": config["training_hyperparameters"]["random_forest"]["n_estimators"],
                     "max_depth": config["training_hyperparameters"]["random_forest"]["max_depth"],
                     "max_features": config["training_hyperparameters"]["random_forest"]["max_features"],
-                    "random_state_rf": config["training_hyperparameters"]["random_forest"]["random_state_rf"],
+                    "random_state_rf": config["training_hyperparameters"]["random_forest"]["random_state"],
                     "n_jobs": config["training_hyperparameters"]["random_forest"]["n_jobs"],
                     "pipeline_path": config["file_paths"]["pipeline"],
                     "classification_report": config["file_paths"]["classification_report"],
-                    "data_slice_report": config["file_paths"]["data_slice_report"]
-                }
-            )
+                    "data_slice_report": config["file_paths"]["data_slice_report"]})
 
 
 if __name__ == "__main__":

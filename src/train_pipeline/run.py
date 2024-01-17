@@ -7,7 +7,6 @@ Last Updated: Jan 2024
 """
 
 import warnings
-import logging
 import argparse
 import pandas as pd
 import joblib
@@ -196,7 +195,7 @@ def model_performance(pipeline, X_test, y_test, in_place=True):
         y_true=y_test, y_pred=y_pred, pos_label="<=50K")
 
     # Path to save metrics report
-    file_path = args.classification_report_path
+    file_path = args.classification_report
 
     with open(file_path, 'w') as file:
         file.write("Accuracy: {:.4f}\n".format(accuracy))

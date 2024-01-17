@@ -9,4 +9,4 @@ build_dependencies:
 dependencies:
   - pandas
   - joblib
-  - sklearn
+  - scikit-learn

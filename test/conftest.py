@@ -8,6 +8,7 @@ def expected_labels():
     expected_labels = ["<=50K", ">50K"]
     return expected_labels
 
+
 @pytest.fixture(scope="session")
 def features():
 
@@ -43,7 +44,8 @@ def pipeline():
 
     if pipeline_path is None:
         pytest.fail(
-            "You must provide the inference_pipeline path on the conftest.py file")
+            "You must provide the inference_pipeline path on\
+                the conftest.py file")
 
     pipeline = joblib.load(pipeline_path)
 

@@ -30,4 +30,3 @@ def test_overall_balanced_accuracy(data, features, pipeline):
     score = balanced_accuracy_score(y_true=y, y_pred=y_pred)
 
     assert score >= .70
-    

@@ -10,8 +10,8 @@ file_paths:
   pipeline: ../../model/inference_pipeline.pkl
 
 data:
-  keep_columns: workclass,education,marital-status,occupation,relationship,race,sex,native-country,salary
-  categorical_features: workclass,education,marital-status,occupation,relationship,race,sex,native-country
+  keep_columns: workclass,education,marital_status,occupation,relationship,race,sex,native_country,salary
+  categorical_features: workclass,education,marital_status,occupation,relationship,race,sex,native_country
   target: salary
 
 training_hyperparameters:

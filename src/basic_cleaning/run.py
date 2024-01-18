@@ -21,6 +21,7 @@ def go(args):
     logger.info("INFO: RAW DATA READ SUCCESFULLY")
 
     df.columns = [column.replace(" ", "") for column in df.columns]
+    df.columns = [column.replace("-", "_") for column in df.columns]
     logger.info("INFO: WHITESPACES REMOVED IN COLUMN NAMES")
 
     columns = args.keep_columns.split(",")  # Transform string to list

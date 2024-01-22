@@ -15,12 +15,12 @@ def features():
     features = [
         "workclass",
         "education",
-        "marital-status",
+        "marital_status",
         "occupation",
         "relationship",
         "race",
         "sex",
-        "native-country"]
+        "native_country"]
 
     return features
 

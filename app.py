@@ -17,7 +17,12 @@ class InputData(BaseModel):
     native_country: str
 
 # Load the scikit-learn pipeline from a pickle file
-model_pipeline = joblib.load("model/inference_pipeline.pkl")
+pipeline = joblib.load("model/inference_pipeline.pkl")
+
+
+@app.get("/")
+def read_root():
+    return "Hello World"
 
 @app.post("/predict")
 def predict(input_data: InputData):
@@ -30,7 +35,7 @@ def predict(input_data: InputData):
         ]])
 
         # Perform prediction using the loaded pipeline
-        prediction = model_pipeline.predict(input_array)
+        prediction = pipeline.predict(input_array)
 
         # Assuming a regression model, modify as needed for classification, etc.
         result = {"prediction": float(prediction[0])}

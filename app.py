@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import joblib
-import numpy as np
+import pandas as pd
 
 app = FastAPI()
 
@@ -16,32 +16,29 @@ class InputData(BaseModel):
     sex: str
     native_country: str
 
-# Load the scikit-learn pipeline from a pickle file
-pipeline = joblib.load("model/inference_pipeline.pkl")
 
 
 @app.get("/")
-def read_root():
-    return "Hello World"
+async def read_root():
+    return "Welcome!"
+
 
 @app.post("/predict")
-def predict(input_data: InputData):
+async def predict(input_data: InputData):
     try:
-        # Convert input data to a numpy array for prediction
-        input_array = np.array([[
-            input_data.attribute1,
-            input_data.attribute2,
-            input_data.attribute3
-        ]])
 
-        # Perform prediction using the loaded pipeline
-        prediction = pipeline.predict(input_array)
+        input_data = input_data.dict()
 
-        # Assuming a regression model, modify as needed for classification, etc.
-        result = {"prediction": float(prediction[0])}
+        # Convert input data to DataFrame
+        input_data = pd.DataFrame([input_data])
+
+        # Load the model pipeline
+        pipeline = joblib.load("model/inference_pipeline.pkl")
+        # Make predictions
+        prediction = pipeline.predict(input_data)
+        print(prediction)
+
+        result = {"prediction": prediction[0]}  # Assuming prediction is a single value
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during prediction: {str(e)}")
-
-# Run your FastAPI application using uvicorn:
-# uvicorn your_script_name:app --reload

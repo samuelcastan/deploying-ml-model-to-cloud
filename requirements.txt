@@ -6,7 +6,6 @@ requests
 fastapi
 uvicorn
 gunicorn
-dvc
 seaborn
 matplotlib
 autopep8

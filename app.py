@@ -17,7 +17,6 @@ class InputData(BaseModel):
     native_country: str
 
 
-
 @app.get("/")
 async def read_root():
     return "Welcome!"
@@ -36,9 +35,11 @@ async def predict(input_data: InputData):
         pipeline = joblib.load("model/inference_pipeline.pkl")
         # Make predictions
         prediction = pipeline.predict(input_data)
-        print(prediction)
+        # Assuming prediction is a single value
+        result = {"prediction": prediction[0]}
 
-        result = {"prediction": prediction[0]}  # Assuming prediction is a single value
         return result
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error during prediction: {str(e)}")
+        raise HTTPException(status_code=500,
+                            detail=f"Error during prediction: {str(e)}")

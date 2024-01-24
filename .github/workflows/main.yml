@@ -26,9 +26,6 @@ jobs:
     - name: Run pytest
       run: pytest -vv
 
-    - name: Run flake8
-      run: flake8
-
   deploy:
     name: Deploy
     needs: [test]

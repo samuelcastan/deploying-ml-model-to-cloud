@@ -25,7 +25,7 @@ def test_upper_class(client):
 
 
 def test_lower_class(client):
-    
+
     data = {
         "workclass": "Private",
         "education": "Some-college",

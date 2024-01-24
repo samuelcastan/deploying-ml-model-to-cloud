@@ -13,4 +13,5 @@ pylint
 joblib
 hydra-core
 virtualenv
+httpx
 mlflow==2.9.2

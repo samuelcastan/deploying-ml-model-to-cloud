@@ -1,6 +1,8 @@
 import pandas as pd
 import joblib
 import pytest
+from fastapi.testclient import TestClient
+from app import app
 
 
 @pytest.fixture(scope="session")
@@ -50,3 +52,10 @@ def pipeline():
     pipeline = joblib.load(pipeline_path)
 
     return pipeline
+
+
+@pytest.fixture(scope="session")
+def client():
+
+    client = TestClient(app)
+    return client

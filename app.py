@@ -16,6 +16,23 @@ class InputData(BaseModel):
     sex: str
     native_country: str
 
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "workclass": "State-gov",
+                    "education": "Bachelors",
+                    "marital_status": "Never-married",
+                    "occupation": "Adm-clerical",
+                    "relationship": "Not-in-family",
+                    "race": "White",
+                    "sex": "Male",
+                    "native_country": "United-States"
+                }
+            ]
+        }
+    }
+
 
 @app.get("/")
 async def read_root():

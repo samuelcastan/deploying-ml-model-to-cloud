@@ -32,13 +32,9 @@
 - max_features="sqrt"
 - random_state=42
 
-## Consideration for future improvements:
-- Undersampling majority class might be doing more harm than benefit to the model performance. It is pending to do more experimentation and see if it is really benefitting performance
-- It might be better to calibrate the model probabilities insted of the previous approach. E.g. use conformal prediction
-- Save artifacts in a remote and versioned model registry (e.g. raw data, cleaned data, trained pipeline, etc.)
-
-## Limitations
-- Data used from https://archive.ics.uci.edu/dataset/20/census+income which was last updated/created on 1994. Surely this dataset doesn't resemble the current reality (2024).
+## Training and Evaluation Data
+- 70% of observations for training.
+- 30% of observations for evaluating. 
 
 ## Performance Metrics on Testing Dataset
 - Recall (>50K): 0.8634
@@ -48,3 +44,12 @@
 
 ## Data Slice Evaluation
 - Refer to *model/data_slice_report.txt* to see thoroughly the slice evaluation to check for possible biases.
+
+## Ethical Considerations
+- On my recomendation, this model SHOULD NOT be used to estimate someones salary as of 2024. The data used to train the model was obtained on 1994. Surely this dataset doesn't resemble the our current reality (2024).
+
+## Consideration for future improvements:
+- Undersampling majority class might be doing more harm than benefit to the model performance. It is pending to do more experimentation and see if it is really benefitting performance
+- It might be better to calibrate the model probabilities insted of the previous approach. E.g. use conformal prediction
+- Save artifacts in a remote and versioned model registry (e.g. raw data, cleaned data, trained pipeline, etc.)
+- In any other case though, the model appears to be biased with respect someones relationship and marital status.
